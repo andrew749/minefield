@@ -1,3 +1,5 @@
+import java.io.IOException;
+
 import org.newdawn.slick.Animation;
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.BasicGame;
@@ -6,7 +8,10 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.openal.Audio;
+import org.newdawn.slick.openal.AudioLoader;
 import org.newdawn.slick.tiled.TiledMap;
+import org.newdawn.slick.util.ResourceLoader;
 
 /*Andrew Codispoti
  * using Slick2d library with lwjgl
@@ -14,8 +19,8 @@ import org.newdawn.slick.tiled.TiledMap;
 public class minefield extends BasicGame {
 	private TiledMap grassMap;
 	private Animation sprite, up, down, left, right;
-	private float x = 34f, y = 34f;
-
+	private float x = 34f, y = 
+			34f;
 	/**
 	 * The collision map indicating which tiles block movement - generated based
 	 * on tile properties
@@ -39,6 +44,7 @@ public class minefield extends BasicGame {
 
 	@Override
 	public void init(GameContainer container) throws SlickException {
+		
 
 		Image[] movementUp = { new Image("data/back.png"),
 				new Image("data/back2.png") };
@@ -67,14 +73,20 @@ public class minefield extends BasicGame {
 
 		// build a collision map based on tile properties in the TileD map
 		blocked = new boolean[grassMap.getWidth()][grassMap.getHeight()];
-
+		// run a loop to determine the properies of every tile
+		// if it is blocked, character can't move
+		// if it is explosivs, there will be an explosion
 		for (int xAxis = 0; xAxis < grassMap.getWidth(); xAxis++) {
 			for (int yAxis = 0; yAxis < grassMap.getHeight(); yAxis++) {
 				int tileID = grassMap.getTileId(xAxis, yAxis, 0);
 				String value = grassMap.getTileProperty(tileID, "blocked",
 						"false");
+				String explosion=grassMap.getTileProperty(tileID, "explosion", "false");
 				if ("true".equals(value)) {
 					blocked[xAxis][yAxis] = true;
+				}
+				if ("yes".equals(explosion)){
+					//some code to execute when explosion occurs
 				}
 			}
 		}
@@ -111,7 +123,7 @@ public class minefield extends BasicGame {
 				x += delta * 0.1f;
 			}
 		}
-		//run distance to mine method and update indicator
+		// run distance to mine method and update indicator
 	}
 
 	public void render(GameContainer container, Graphics g)
