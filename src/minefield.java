@@ -63,7 +63,7 @@ public class minefield extends BasicGame {
 		right = new Animation(movementRight, duration, false);
 
 		// Original orientation of the sprite. It will look right.
-		sprite = right;
+		sprite = down;
 
 		// build a collision map based on tile properties in the TileD map
 		blocked = new boolean[grassMap.getWidth()][grassMap.getHeight()];
@@ -111,6 +111,7 @@ public class minefield extends BasicGame {
 				x += delta * 0.1f;
 			}
 		}
+		//run distance to mine method and update indicator
 	}
 
 	public void render(GameContainer container, Graphics g)
@@ -124,4 +125,9 @@ public class minefield extends BasicGame {
 		int yBlock = (int) y / SIZE;
 		return blocked[xBlock][yBlock];
 	}
+	/*
+	 * private int determineDistanceToMine(){
+	 * 
+	 * }
+	 */
 }
