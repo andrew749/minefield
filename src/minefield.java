@@ -19,32 +19,34 @@ import org.newdawn.slick.util.ResourceLoader;
 public class minefield extends BasicGame {
 	private TiledMap grassMap;
 	private Animation sprite, up, down, left, right;
-	private float x = 34f, y = 
-			34f;
+	private float x = 34f, y = 34f;
+	private int playerHeight = 80, playerWidth;
 	/**
 	 * The collision map indicating which tiles block movement - generated based
 	 * on tile properties
 	 */
 	private boolean[][] blocked;
 	private static final int SIZE = 34;
+	private boolean[][] explosive;
 
 	public minefield() {
 		super("Minefield");
 	}
 
+	// main method to create the main game window
 	public static void main(String[] arguments) {
 		try {
 			AppGameContainer app = new AppGameContainer(new minefield());
-			app.setDisplayMode(1000, 700, false);
+			app.setDisplayMode(700, 700, false);
 			app.start();
 		} catch (SlickException e) {
 			e.printStackTrace();
 		}
 	}
 
+	// initialization of all the elements
 	@Override
 	public void init(GameContainer container) throws SlickException {
-		
 
 		Image[] movementUp = { new Image("data/back.png"),
 				new Image("data/back2.png") };
@@ -73,20 +75,23 @@ public class minefield extends BasicGame {
 
 		// build a collision map based on tile properties in the TileD map
 		blocked = new boolean[grassMap.getWidth()][grassMap.getHeight()];
-		// run a loop to determine the properies of every tile
+		explosive = new boolean[grassMap.getWidth()][grassMap.getHeight()];
+		// run a loop to determine the properties of every tile
 		// if it is blocked, character can't move
-		// if it is explosivs, there will be an explosion
+		// if it is explosives, there will be an explosion
 		for (int xAxis = 0; xAxis < grassMap.getWidth(); xAxis++) {
 			for (int yAxis = 0; yAxis < grassMap.getHeight(); yAxis++) {
 				int tileID = grassMap.getTileId(xAxis, yAxis, 0);
 				String value = grassMap.getTileProperty(tileID, "blocked",
 						"false");
-				String explosion=grassMap.getTileProperty(tileID, "explosion", "false");
+				String explosion = grassMap.getTileProperty(tileID,
+						"explosive", "false");
 				if ("true".equals(value)) {
 					blocked[xAxis][yAxis] = true;
 				}
-				if ("yes".equals(explosion)){
-					//some code to execute when explosion occurs
+				if ("true".equals(explosion)) {
+					// some code to execute when explosion occurs
+					explosive[xAxis - 1][yAxis] = true;
 				}
 			}
 		}
@@ -97,6 +102,7 @@ public class minefield extends BasicGame {
 	public void update(GameContainer container, int delta)
 			throws SlickException {
 		Input input = container.getInput();
+
 		if (input.isKeyDown(Input.KEY_UP)) {
 			sprite = up;
 			if (!isBlocked(x, y - delta * 0.1f)) {
@@ -123,6 +129,12 @@ public class minefield extends BasicGame {
 				x += delta * 0.1f;
 			}
 		}
+
+		// determine if the block is explosive
+		if (isExplosive(x, y)) {
+			System.out.println("Explosion!!");
+		}
+
 		// run distance to mine method and update indicator
 	}
 
@@ -134,12 +146,24 @@ public class minefield extends BasicGame {
 
 	private boolean isBlocked(float x, float y) {
 		int xBlock = (int) x / SIZE;
-		int yBlock = (int) y / SIZE;
+		int yBlock = (int) (y / SIZE) + 2;
 		return blocked[xBlock][yBlock];
 	}
-	/*
-	 * private int determineDistanceToMine(){
-	 * 
-	 * }
-	 */
+
+	private boolean isExplosive(float x, float y) {
+		int xBlock = (int) (x / SIZE);
+		int yBlock = (int) (y / SIZE) + 2;
+		return explosive[xBlock][yBlock];
+	}
+
+	private int determineDistanceToMine(float x, float y) {
+		int distance = 0;
+		int closestMineX=0, closestMineY=0;
+		//iterate over all of the mines and determine the distances
+		
+		//determines the direct distance to closest mine
+		distance=(int) Math.sqrt((closestMineX*closestMineX)+(closestMineY*closestMineY));
+		return distance;
+	}
+
 }

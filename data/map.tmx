@@ -1,24 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" width="115" height="115" tilewidth="32" tileheight="32">
- <tileset firstgid="1" name="rock" tilewidth="32" tileheight="32">
-  <image source="rock.bmp" width="40" height="40"/>
-  <tile id="0">
-   <properties>
-    <property name="blocked" value="false"/>
-   </properties>
-  </tile>
- </tileset>
- <tileset firstgid="2" name="grass" tilewidth="32" tileheight="32">
+<map version="1.0" orientation="orthogonal" width="40" height="40" tilewidth="32" tileheight="32">
+ <tileset firstgid="1" name="grass" tilewidth="32" tileheight="32">
   <image source="grass.bmp" width="42" height="42"/>
   <tile id="0">
    <properties>
-    <property name="blocked" value="true"/>
+    <property name="blocked" value="false"/>
+    <property name="explosive" value="false"/>
    </properties>
   </tile>
  </tileset>
- <layer name="Tile Layer 1" width="115" height="115">
+ <tileset firstgid="2" name="rock" tilewidth="32" tileheight="32">
+  <image source="rock.bmp" width="40" height="40"/>
+  <tile id="0">
+   <properties>
+    <property name="blocked" value="true"/>
+    <property name="explosive" value="false"/>
+   </properties>
+  </tile>
+ </tileset>
+ <tileset firstgid="3" name="tile" tilewidth="32" tileheight="32">
+  <image source="tile.bmp" width="32" height="32"/>
+  <tile id="0">
+   <properties>
+    <property name="blocked" value="false"/>
+    <property name="explosive" value="true"/>
+   </properties>
+  </tile>
+ </tileset>
+ <layer name="Tile Layer 1" width="40" height="40">
   <data encoding="base64" compression="gzip">
-   H4sIAAAAAAAAA+3RsQkAMAwDQTn7D+0JXKUwJFdc+yBUSQoAAGDJuTC1tjf9ypcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALyiAXXaqAekzgAA
+   H4sIAAAAAAAAA+3XQQoAIAgAQbP//7lHpLXFHvYag0hgRkTCG+D01fsmwPXy/Ejt+E7swc/zO+Uj/+/69N32db6vT58+fdT06dOnTx8zffr0ve0jGyvu8857fQGpBucRABkAAA==
   </data>
  </layer>
 </map>
