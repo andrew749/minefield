@@ -18,16 +18,23 @@ import org.newdawn.slick.util.ResourceLoader;
  */
 public class minefield extends BasicGame {
 	private TiledMap grassMap;
-	private Animation sprite, up, down, left, right;
+	private Animation sprite, up, down, left, right, explosion;
 	private float x = 34f, y = 34f;
 	private int playerHeight = 80, playerWidth;
+	// state of 0 means playing, 1 means stopped
+	public int gamestate = 0;
+	//block #'s 
+	private int blockx,blocky;
 	/**
 	 * The collision map indicating which tiles block movement - generated based
 	 * on tile properties
 	 */
 	private boolean[][] blocked;
 	private static final int SIZE = 34;
+	// hold the coordinates of the points where there are mines
 	private boolean[][] explosive;
+	// hold the coordinates of the points to go to the next level
+	private boolean[][] nextLevel;
 
 	public minefield() {
 		super("Minefield");
@@ -48,16 +55,39 @@ public class minefield extends BasicGame {
 	@Override
 	public void init(GameContainer container) throws SlickException {
 
-		Image[] movementUp = { new Image("data/back.png"),
-				new Image("data/back2.png") };
-		Image[] movementDown = { new Image("data/front.png"),
-				new Image("data/front2.png") };
-		Image[] movementLeft = { new Image("data/left.png"),
-				new Image("data/left2.png") };
-		Image[] movementRight = { new Image("data/right.png"),
-				new Image("data/right2.png") };
-		int[] duration = { 300, 300 };
+		Image[] movementUp = { new Image("data/back1.bmp"),
+				new Image("data/back2.bmp"), new Image("data/back3.bmp"),
+				new Image("data/back4.bmp"), new Image("data/back5.bmp"),
+				new Image("data/back6.bmp"), new Image("data/back7.bmp"),
+				new Image("data/back8.bmp"), new Image("data/back9.bmp"),
+				new Image("data/back10.bmp") };
+		Image[] movementDown = { new Image("data/front1.bmp"),
+				new Image("data/front2.bmp"), new Image("data/front3.bmp"),
+				new Image("data/front4.bmp"), new Image("data/front5.bmp"),
+				new Image("data/front6.bmp"), new Image("data/front7.bmp"),
+				new Image("data/front8.bmp"), new Image("data/front9.bmp"),
+				new Image("data/front10.bmp") };
+		Image[] movementLeft = { new Image("data/left1.bmp"),
+				new Image("data/left2.bmp"), new Image("data/left3.bmp"),
+				new Image("data/left4.bmp"), new Image("data/left5.bmp"),
+				new Image("data/left6.bmp"), new Image("data/left7.bmp"),
+				new Image("data/left8.bmp"), new Image("data/left9.bmp"),
+				new Image("data/left10.bmp") };
+		Image[] movementRight = { new Image("data/right1.bmp"),
+				new Image("data/right2.bmp"), new Image("data/right3.bmp"),
+				new Image("data/right4.bmp"), new Image("data/right5.bmp"),
+				new Image("data/right6.bmp"), new Image("data/right7.bmp"),
+				new Image("data/right8.bmp"), new Image("data/right9.bmp"),
+				new Image("data/right10.bmp") };
+		int[] duration = { 80, 80, 80, 80, 80, 80, 80, 80, 80, 80 };
 
+		Image[] explode = new Image[25];
+		int[] durationexplosion = new int[25];
+		// Initialize explosion duration
+		for (int i = 0; i < durationexplosion.length; i++) {
+			durationexplosion[i] = 30;
+			explode[i] = new Image("data/explosion" + (i + 1) + ".bmp");
+		}
 		grassMap = new TiledMap("data/map.tmx");
 
 		/*
@@ -69,11 +99,13 @@ public class minefield extends BasicGame {
 		down = new Animation(movementDown, duration, false);
 		left = new Animation(movementLeft, duration, false);
 		right = new Animation(movementRight, duration, false);
-
+		explosion = new Animation(explode, durationexplosion, true);
 		// Original orientation of the sprite. It will look right.
-		sprite = down;
+		sprite = right;
 
-		// build a collision map based on tile properties in the TileD map
+		// build a collision map based on tile properties in the TileD map for
+		// both blocking and explosives
+
 		blocked = new boolean[grassMap.getWidth()][grassMap.getHeight()];
 		explosive = new boolean[grassMap.getWidth()][grassMap.getHeight()];
 		// run a loop to determine the properties of every tile
@@ -90,7 +122,6 @@ public class minefield extends BasicGame {
 					blocked[xAxis][yAxis] = true;
 				}
 				if ("true".equals(explosion)) {
-					// some code to execute when explosion occurs
 					explosive[xAxis - 1][yAxis] = true;
 				}
 			}
@@ -101,41 +132,53 @@ public class minefield extends BasicGame {
 	@Override
 	public void update(GameContainer container, int delta)
 			throws SlickException {
-		Input input = container.getInput();
+		
+		if (gamestate == 0) {
+			blockx=(int)x/SIZE;
+			blocky=(int)y/SIZE;
+			/*
+			 * Obtain input from the user and move the character accordingly
+			 */
+			Input input = container.getInput();
+			System.out.println("Distance to mine:"+determineDistanceToMine(x, y));
+			if (input.isKeyDown(Input.KEY_UP)) {
+				sprite = up;
+				if (!isBlocked(x, y - delta * 0.1f)) {
+					sprite.update(delta);
+					// The lower the delta the slowest the sprite will animate.
+					y -= delta * 0.1f;
+				}
+			} else if (input.isKeyDown(Input.KEY_DOWN)) {
+				sprite = down;
+				if (!isBlocked(x, y + SIZE + delta * 0.1f)) {
+					sprite.update(delta);
+					y += delta * 0.1f;
+				}
+			} else if (input.isKeyDown(Input.KEY_LEFT)) {
+				sprite = left;
+				if (!isBlocked(x - delta * 0.1f, y)) {
+					sprite.update(delta);
+					x -= delta * 0.1f;
+				}
+			} else if (input.isKeyDown(Input.KEY_RIGHT)) {
+				sprite = right;
+				if (!isBlocked(x + SIZE + delta * 0.1f, y)) {
+					sprite.update(delta);
+					x += delta * 0.1f;
+				}
+			}
 
-		if (input.isKeyDown(Input.KEY_UP)) {
-			sprite = up;
-			if (!isBlocked(x, y - delta * 0.1f)) {
-				sprite.update(delta);
-				// The lower the delta the slowest the sprite will animate.
-				y -= delta * 0.1f;
+			// determine if the block is explosive
+			if (isExplosive(x, y)) {
+				System.out.println("Explosion!");
+				gamestate = 1;
 			}
-		} else if (input.isKeyDown(Input.KEY_DOWN)) {
-			sprite = down;
-			if (!isBlocked(x, y + SIZE + delta * 0.1f)) {
-				sprite.update(delta);
-				y += delta * 0.1f;
-			}
-		} else if (input.isKeyDown(Input.KEY_LEFT)) {
-			sprite = left;
-			if (!isBlocked(x - delta * 0.1f, y)) {
-				sprite.update(delta);
-				x -= delta * 0.1f;
-			}
-		} else if (input.isKeyDown(Input.KEY_RIGHT)) {
-			sprite = right;
-			if (!isBlocked(x + SIZE + delta * 0.1f, y)) {
-				sprite.update(delta);
-				x += delta * 0.1f;
-			}
+			// run distance to mine method and update indicator
+
+		} else {
+			sprite = explosion;
+			sprite.update(delta);
 		}
-
-		// determine if the block is explosive
-		if (isExplosive(x, y)) {
-			System.out.println("Explosion!!");
-		}
-
-		// run distance to mine method and update indicator
 	}
 
 	public void render(GameContainer container, Graphics g)
@@ -156,13 +199,30 @@ public class minefield extends BasicGame {
 		return explosive[xBlock][yBlock];
 	}
 
-	private int determineDistanceToMine(float x, float y) {
-		int distance = 0;
-		int closestMineX=0, closestMineY=0;
-		//iterate over all of the mines and determine the distances
+	private double determineDistanceToMine(float x, float y) {
+		double distance = 0, tempDistance;
+		int closestMineX = 10000, closestMineY = 10000;
+		// iterate over all of the mines and determine the distances
+		for (int j = 0; j < explosive.length; j++) {
+			for (int i = 0; i < explosive.length; i++) {
+				if (explosive[i][j]) {
+					tempDistance =  Math.sqrt(Math.pow(i-blockx, 2)
+							+ Math.pow(j-blocky, 2));
+					
+					System.out.println("X="+blockx);
+					System.out.println("Y="+blocky);
+					if (tempDistance < Math.sqrt((closestMineX * closestMineX)
+							+ (closestMineY * closestMineY))) {
+						closestMineX = i;
+						closestMineY = j;
+						distance=tempDistance;
+					}
+
+				}
+			}
+		}
+		// determines the direct distance to closest mine
 		
-		//determines the direct distance to closest mine
-		distance=(int) Math.sqrt((closestMineX*closestMineX)+(closestMineY*closestMineY));
 		return distance;
 	}
 
