@@ -1,5 +1,3 @@
-import java.io.IOException;
-
 import org.newdawn.slick.Animation;
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.BasicGame;
@@ -21,7 +19,6 @@ public class minefield extends BasicGame {
 	private Animation sprite, up, down, left, right, explosion;
 	private float x = 34f, y = 34f;
 	// stores dimensions for player
-	private int playerHeight = 80, playerWidth;
 	// state of 0 means playing, 1 means stopped
 	public int gamestate = 0;
 	// block #'s
@@ -178,16 +175,19 @@ public class minefield extends BasicGame {
 			}
 			// determine the danger level and move the arrow accordingly
 			if (determineDistanceToMine(x, y) <= 2 && arrowstate != 2) {
+				arrow.setRotation(90);
 				arrow.draw();
-				arrow.rotate(90);
+
 				arrowstate = 2;
-			} else if ((determineDistanceToMine(x, y) < 4)&&(determineDistanceToMine(x, y)>2) && arrowstate != 1) {
+			} else if ((determineDistanceToMine(x, y) < 4)
+					&& (determineDistanceToMine(x, y) > 2) && arrowstate != 1) {
+				arrow.setRotation(0);
 				arrow.draw();
-				arrow.rotate(0);
+
 				arrowstate = 1;
-			} else if(determineDistanceToMine(x, y)>=4&&arrowstate!=0) {
+			} else if (determineDistanceToMine(x, y) >= 4 && arrowstate != 0) {
+				arrow.setRotation(270);
 				arrow.draw();
-				arrow.rotate(270);
 				arrowstate = 0;
 			}
 
@@ -204,12 +204,12 @@ public class minefield extends BasicGame {
 		}
 	}
 
-	// intially renders the screen
+	// Initially renders the screen
 	public void render(GameContainer container, Graphics g)
 			throws SlickException {
 		grassMap.render(0, 0);
-		gauge.draw(500, 100);
-		arrow.draw(550, 200);
+		gauge.draw(500, 0);
+		arrow.draw(583, 23);
 		sprite.draw((int) x, (int) y);
 	}
 
