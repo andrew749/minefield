@@ -20,11 +20,15 @@ public class minefield extends BasicGame {
 	private TiledMap grassMap;
 	private Animation sprite, up, down, left, right, explosion;
 	private float x = 34f, y = 34f;
+	// stores dimensions for player
 	private int playerHeight = 80, playerWidth;
 	// state of 0 means playing, 1 means stopped
 	public int gamestate = 0;
-	//block #'s 
-	private int blockx,blocky;
+	// block #'s
+	private int blockx, blocky;
+	Image gauge, arrow;
+	// arrow state 0 = safe, 1= medium, 2=danger
+	int arrowstate = 0;
 	/**
 	 * The collision map indicating which tiles block movement - generated based
 	 * on tile properties
@@ -54,7 +58,8 @@ public class minefield extends BasicGame {
 	// initialization of all the elements
 	@Override
 	public void init(GameContainer container) throws SlickException {
-
+		gauge = new Image("data/gauge.png");
+		arrow = new Image("data/arrow.png");
 		Image[] movementUp = { new Image("data/back1.bmp"),
 				new Image("data/back2.bmp"), new Image("data/back3.bmp"),
 				new Image("data/back4.bmp"), new Image("data/back5.bmp"),
@@ -129,18 +134,22 @@ public class minefield extends BasicGame {
 
 	}
 
+	/**
+	 * Player uses the up, down, left, and right arrow keys to move
+	 */
 	@Override
 	public void update(GameContainer container, int delta)
 			throws SlickException {
-		
+
 		if (gamestate == 0) {
-			blockx=(int)x/SIZE;
-			blocky=(int)y/SIZE;
+			blockx = (int) x / SIZE;
+			blocky = (int) y / SIZE;
 			/*
 			 * Obtain input from the user and move the character accordingly
 			 */
 			Input input = container.getInput();
-			System.out.println("Distance to mine:"+determineDistanceToMine(x, y));
+			System.out.println("Distance to mine:"
+					+ determineDistanceToMine(x, y));
 			if (input.isKeyDown(Input.KEY_UP)) {
 				sprite = up;
 				if (!isBlocked(x, y - delta * 0.1f)) {
@@ -167,6 +176,20 @@ public class minefield extends BasicGame {
 					x += delta * 0.1f;
 				}
 			}
+			// determine the danger level and move the arrow accordingly
+			if (determineDistanceToMine(x, y) <= 2 && arrowstate != 2) {
+				arrow.draw();
+				arrow.rotate(90);
+				arrowstate = 2;
+			} else if ((determineDistanceToMine(x, y) < 4)&&(determineDistanceToMine(x, y)>2) && arrowstate != 1) {
+				arrow.draw();
+				arrow.rotate(0);
+				arrowstate = 1;
+			} else if(determineDistanceToMine(x, y)>=4&&arrowstate!=0) {
+				arrow.draw();
+				arrow.rotate(270);
+				arrowstate = 0;
+			}
 
 			// determine if the block is explosive
 			if (isExplosive(x, y)) {
@@ -181,20 +204,25 @@ public class minefield extends BasicGame {
 		}
 	}
 
+	// intially renders the screen
 	public void render(GameContainer container, Graphics g)
 			throws SlickException {
 		grassMap.render(0, 0);
+		gauge.draw(500, 100);
+		arrow.draw(550, 200);
 		sprite.draw((int) x, (int) y);
 	}
 
+	// determines if a tile is blocked
 	private boolean isBlocked(float x, float y) {
-		int xBlock = (int) x / SIZE;
+		int xBlock = (int) (x / SIZE) + 1;
 		int yBlock = (int) (y / SIZE) + 2;
 		return blocked[xBlock][yBlock];
 	}
 
+	// determines if a block is explosive
 	private boolean isExplosive(float x, float y) {
-		int xBlock = (int) (x / SIZE);
+		int xBlock = (int) (x / SIZE) + 1;
 		int yBlock = (int) (y / SIZE) + 2;
 		return explosive[xBlock][yBlock];
 	}
@@ -202,27 +230,30 @@ public class minefield extends BasicGame {
 	private double determineDistanceToMine(float x, float y) {
 		double distance = 0, tempDistance;
 		int closestMineX = 10000, closestMineY = 10000;
+		// debugging purposes
+
+		System.out.println("X=" + blockx);
+		System.out.println("Y=" + blocky);
 		// iterate over all of the mines and determine the distances
 		for (int j = 0; j < explosive.length; j++) {
 			for (int i = 0; i < explosive.length; i++) {
 				if (explosive[i][j]) {
-					tempDistance =  Math.sqrt(Math.pow(i-blockx, 2)
-							+ Math.pow(j-blocky, 2));
-					
-					System.out.println("X="+blockx);
-					System.out.println("Y="+blocky);
+					tempDistance = Math.sqrt(Math.pow(i - blockx, 2)
+							+ Math.pow(j - blocky, 2));
+
+					// sets the closest distance to the proximity
 					if (tempDistance < Math.sqrt((closestMineX * closestMineX)
 							+ (closestMineY * closestMineY))) {
 						closestMineX = i;
 						closestMineY = j;
-						distance=tempDistance;
+						distance = tempDistance - 1;
 					}
 
 				}
 			}
 		}
 		// determines the direct distance to closest mine
-		
+
 		return distance;
 	}
 
