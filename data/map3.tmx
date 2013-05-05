@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="25" height="25" tilewidth="32" tileheight="32">
+ <tileset firstgid="1" name="grass" tilewidth="32" tileheight="32">
+  <image source="grass.bmp" width="42" height="42"/>
+ </tileset>
+ <tileset firstgid="2" name="rock" tilewidth="32" tileheight="32">
+  <image source="rock.bmp" width="40" height="40"/>
+  <tile id="0">
+   <properties>
+    <property name="blocked" value="true"/>
+   </properties>
+  </tile>
+ </tileset>
+ <tileset firstgid="3" name="level" tilewidth="32" tileheight="32">
+  <image source="level.png" width="32" height="32"/>
+  <tile id="0">
+   <properties>
+    <property name="level" value="true"/>
+   </properties>
+  </tile>
+ </tileset>
+ <tileset firstgid="4" name="tile" tilewidth="32" tileheight="32">
+  <image source="tile.bmp" width="32" height="32"/>
+  <tile id="0">
+   <properties>
+    <property name="explosive" value="true"/>
+   </properties>
+  </tile>
+ </tileset>
+ <layer name="Tile Layer 1" width="25" height="25">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAA2NiYGBgogNmpBFmoYMdjKN2DEk7KE2bQ9kOlgH2Bwsd7BhK8TFqx9C2g1I8mOzAljcH0h/MaJiedlASFsTaQWsMAFom+eXECQAA
+  </data>
+ </layer>
+</map>

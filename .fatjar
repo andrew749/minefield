@@ -1,0 +1,14 @@
+#Fat Jar Configuration File
+#Sun May 05 14:02:50 EDT 2013
+onejar.license.required=false
+manifest.classpath=
+manifest.removesigners=true
+onejar.checkbox=false
+jarname=Minefield_fat.jar
+manifest.mergeall=true
+manifest.mainclass=minefield
+manifest.file=<createnew>
+jarname.isextern=false
+onejar.expand=
+excludes=
+includes=

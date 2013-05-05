@@ -6,18 +6,15 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
-import org.newdawn.slick.openal.Audio;
-import org.newdawn.slick.openal.AudioLoader;
 import org.newdawn.slick.tiled.TiledMap;
-import org.newdawn.slick.util.ResourceLoader;
 
 /*Andrew Codispoti
  * using Slick2d library with lwjgl
  */
 public class minefield extends BasicGame {
-	private TiledMap grassMap;
+	private static TiledMap grassMap;
 	private Animation sprite, up, down, left, right, explosion;
-	private float x = 34f, y = 34f;
+	private static float x = 34f, y = 34f;
 	// stores dimensions for player
 	// state of 0 means playing, 1 means stopped
 	public int gamestate = 0;
@@ -26,16 +23,20 @@ public class minefield extends BasicGame {
 	Image gauge, arrow;
 	// arrow state 0 = safe, 1= medium, 2=danger
 	int arrowstate = 0;
+
+	// stores the current level
+	private int levelCount = 1;
+
 	/**
 	 * The collision map indicating which tiles block movement - generated based
 	 * on tile properties
 	 */
-	private boolean[][] blocked;
+	private static boolean[][] blocked;
 	private static final int SIZE = 34;
 	// hold the coordinates of the points where there are mines
-	private boolean[][] explosive;
+	private static boolean[][] explosive;
 	// hold the coordinates of the points to go to the next level
-	private boolean[][] nextLevel;
+	private static boolean[][] nextLevel;
 
 	public minefield() {
 		super("Minefield");
@@ -57,6 +58,8 @@ public class minefield extends BasicGame {
 	public void init(GameContainer container) throws SlickException {
 		gauge = new Image("data/gauge.png");
 		arrow = new Image("data/arrow.png");
+
+		// arrays to hold images for movement
 		Image[] movementUp = { new Image("data/back1.bmp"),
 				new Image("data/back2.bmp"), new Image("data/back3.bmp"),
 				new Image("data/back4.bmp"), new Image("data/back5.bmp"),
@@ -90,7 +93,7 @@ public class minefield extends BasicGame {
 			durationexplosion[i] = 30;
 			explode[i] = new Image("data/explosion" + (i + 1) + ".bmp");
 		}
-		grassMap = new TiledMap("data/map.tmx");
+		grassMap = new TiledMap("data/map1.tmx");
 
 		/*
 		 * false variable means do not auto update the animation. By setting it
@@ -106,28 +109,13 @@ public class minefield extends BasicGame {
 		sprite = right;
 
 		// build a collision map based on tile properties in the TileD map for
-		// both blocking and explosives
+		// both blocking and explosives as well as new level
 
 		blocked = new boolean[grassMap.getWidth()][grassMap.getHeight()];
 		explosive = new boolean[grassMap.getWidth()][grassMap.getHeight()];
-		// run a loop to determine the properties of every tile
-		// if it is blocked, character can't move
-		// if it is explosives, there will be an explosion
-		for (int xAxis = 0; xAxis < grassMap.getWidth(); xAxis++) {
-			for (int yAxis = 0; yAxis < grassMap.getHeight(); yAxis++) {
-				int tileID = grassMap.getTileId(xAxis, yAxis, 0);
-				String value = grassMap.getTileProperty(tileID, "blocked",
-						"false");
-				String explosion = grassMap.getTileProperty(tileID,
-						"explosive", "false");
-				if ("true".equals(value)) {
-					blocked[xAxis][yAxis] = true;
-				}
-				if ("true".equals(explosion)) {
-					explosive[xAxis - 1][yAxis] = true;
-				}
-			}
-		}
+		nextLevel = new boolean[grassMap.getWidth()][grassMap.getHeight()];
+
+		parseMap();
 
 	}
 
@@ -141,6 +129,7 @@ public class minefield extends BasicGame {
 		if (gamestate == 0) {
 			blockx = (int) x / SIZE;
 			blocky = (int) y / SIZE;
+
 			/*
 			 * Obtain input from the user and move the character accordingly
 			 */
@@ -173,6 +162,7 @@ public class minefield extends BasicGame {
 					x += delta * 0.1f;
 				}
 			}
+
 			// determine the danger level and move the arrow accordingly
 			if (determineDistanceToMine(x, y) <= 2 && arrowstate != 2) {
 				arrow.setRotation(90);
@@ -189,6 +179,17 @@ public class minefield extends BasicGame {
 				arrow.setRotation(270);
 				arrow.draw();
 				arrowstate = 0;
+			}
+
+			// determine if the player is on a new level block
+			if (isNewLevel(x, y)) {
+				levelCount++;
+				grassMap = new TiledMap("data/map" + levelCount + ".tmx");
+				grassMap.render(0, 0);
+				x = 0;
+				y = 0;
+				purgeVariables();
+				parseMap();
 			}
 
 			// determine if the block is explosive
@@ -227,6 +228,12 @@ public class minefield extends BasicGame {
 		return explosive[xBlock][yBlock];
 	}
 
+	private boolean isNewLevel(float x, float y) {
+		int xBlock = (int) (x / SIZE) + 1;
+		int yBlock = (int) (y / SIZE) + 2;
+		return nextLevel[xBlock][yBlock];
+	}
+
 	private double determineDistanceToMine(float x, float y) {
 		double distance = 0, tempDistance;
 		int closestMineX = 10000, closestMineY = 10000;
@@ -255,6 +262,44 @@ public class minefield extends BasicGame {
 		// determines the direct distance to closest mine
 
 		return distance;
+	}
+
+	// run a loop to determine the properties of every tile
+	// if it is blocked, character can't move
+	// if it is explosives, there will be an explosion
+	public void parseMap() {
+		for (int xAxis = 0; xAxis < grassMap.getWidth(); xAxis++) {
+			for (int yAxis = 0; yAxis < grassMap.getHeight(); yAxis++) {
+				int tileID = grassMap.getTileId(xAxis, yAxis, 0);
+				String value = grassMap.getTileProperty(tileID, "blocked",
+						"false");
+				String explosion = grassMap.getTileProperty(tileID,
+						"explosive", "false");
+				String level = grassMap.getTileProperty(tileID, "level",
+						"false");
+				if ("true".equals(value)) {
+					blocked[xAxis][yAxis] = true;
+				}
+				if ("true".equals(explosion)) {
+					explosive[xAxis][yAxis] = true;
+				}
+				if ("true".equals(level)) {
+					nextLevel[xAxis][yAxis] = true;
+				}
+			}
+		}
+
+	}
+
+	public void purgeVariables() {
+		for (int i = 0; i < grassMap.getHeight(); i++) {
+			for (int x = 0; x < grassMap.getWidth(); x++) {
+				nextLevel[x][i] = false;
+				blocked[x][i] = false;
+				explosive[x][i] = false;
+			}
+		}
+		System.out.println("cleared");
 	}
 
 }
