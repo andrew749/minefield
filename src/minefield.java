@@ -27,7 +27,6 @@ public class minefield extends BasicGame {
 	Thread game;
 	// stores the current level
 	private int levelCount = 1;
-
 	/**
 	 * The collision map indicating which tiles block movement - generated based
 	 * on tile properties
@@ -44,11 +43,11 @@ public class minefield extends BasicGame {
 	}
 
 	// main method to create the main game window
-	public static void main(String[] arguments) {
-	}
-	public void start(){
-		game=new Thread(new Runnable() {
-			
+
+
+	public void start() {
+		game = new Thread(new Runnable() {
+
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
@@ -57,15 +56,17 @@ public class minefield extends BasicGame {
 		});
 		game.run();
 	}
+
 	@SuppressWarnings("deprecation")
-	public void pause(){
+	public void pause() {
 		game.suspend();
 	}
+
 	@SuppressWarnings("deprecation")
-	public void stop(){
+	public void stop() {
 		game.destroy();
 	}
-	
+
 	public static void runGame() {
 		try {
 			app = new AppGameContainer(new minefield());
@@ -263,7 +264,6 @@ public class minefield extends BasicGame {
 		int closestMineX = 10000, closestMineY = 10000;
 		// debugging purposes
 
-		
 		// iterate over all of the mines and determine the distances
 		for (int j = 0; j < explosive.length; j++) {
 			for (int i = 0; i < explosive.length; i++) {
