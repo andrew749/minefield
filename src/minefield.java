@@ -15,6 +15,7 @@ public class minefield extends BasicGame {
 	private static TiledMap grassMap;
 	private Animation sprite, up, down, left, right, explosion;
 	private static float x = 34f, y = 34f;
+	static AppGameContainer app;
 	// stores dimensions for player
 	// state of 0 means playing, 1 means stopped
 	public int gamestate = 0;
@@ -23,7 +24,7 @@ public class minefield extends BasicGame {
 	Image gauge, arrow;
 	// arrow state 0 = safe, 1= medium, 2=danger
 	int arrowstate = 0;
-
+	Thread game;
 	// stores the current level
 	private int levelCount = 1;
 
@@ -44,8 +45,30 @@ public class minefield extends BasicGame {
 
 	// main method to create the main game window
 	public static void main(String[] arguments) {
+	}
+	public void start(){
+		game=new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				runGame();
+			}
+		});
+		game.run();
+	}
+	@SuppressWarnings("deprecation")
+	public void pause(){
+		game.suspend();
+	}
+	@SuppressWarnings("deprecation")
+	public void stop(){
+		game.destroy();
+	}
+	
+	public static void runGame() {
 		try {
-			AppGameContainer app = new AppGameContainer(new minefield());
+			app = new AppGameContainer(new minefield());
 			app.setDisplayMode(700, 700, false);
 			app.start();
 		} catch (SlickException e) {
@@ -129,7 +152,8 @@ public class minefield extends BasicGame {
 		if (gamestate == 0) {
 			blockx = (int) x / SIZE;
 			blocky = (int) y / SIZE;
-
+			System.out.println("X=" + blockx);
+			System.out.println("Y=" + blocky);
 			/*
 			 * Obtain input from the user and move the character accordingly
 			 */
@@ -164,18 +188,18 @@ public class minefield extends BasicGame {
 			}
 
 			// determine the danger level and move the arrow accordingly
-			if (determineDistanceToMine(x, y) <= 2 && arrowstate != 2) {
+			if (determineDistanceToMine(x, y) <= 3 && arrowstate != 2) {
 				arrow.setRotation(90);
 				arrow.draw();
 
 				arrowstate = 2;
-			} else if ((determineDistanceToMine(x, y) < 4)
-					&& (determineDistanceToMine(x, y) > 2) && arrowstate != 1) {
+			} else if ((determineDistanceToMine(x, y) < 5)
+					&& (determineDistanceToMine(x, y) > 3) && arrowstate != 1) {
 				arrow.setRotation(0);
 				arrow.draw();
 
 				arrowstate = 1;
-			} else if (determineDistanceToMine(x, y) >= 4 && arrowstate != 0) {
+			} else if (determineDistanceToMine(x, y) >= 5 && arrowstate != 0) {
 				arrow.setRotation(270);
 				arrow.draw();
 				arrowstate = 0;
@@ -239,8 +263,7 @@ public class minefield extends BasicGame {
 		int closestMineX = 10000, closestMineY = 10000;
 		// debugging purposes
 
-		System.out.println("X=" + blockx);
-		System.out.println("Y=" + blocky);
+		
 		// iterate over all of the mines and determine the distances
 		for (int j = 0; j < explosive.length; j++) {
 			for (int i = 0; i < explosive.length; i++) {
