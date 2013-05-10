@@ -13,7 +13,7 @@ public class gui implements ActionListener {
 	JPanel contentPane;
 	JButton button, pause, stop;
 	JLabel label;
-	final String instructions = "Welcome to minefield";
+	final String instructions = "Welcome to minefield. The purpose of this game is to avoid the mines and make it to the next level while using the proximity meter at the top to navigate.";
 	minefield minefield;
 
 	public gui() {
