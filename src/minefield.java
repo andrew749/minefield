@@ -1,3 +1,10 @@
+import java.io.File;
+
+import javax.print.attribute.standard.Media;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+
 import org.newdawn.slick.Animation;
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.BasicGame;
@@ -7,7 +14,6 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.tiled.TiledMap;
-
 /*Andrew Codispoti
  * using Slick2d library with lwjgl
  */
@@ -23,7 +29,7 @@ public class minefield extends BasicGame {
 	private int blockx, blocky;
 	Image gauge, arrow;
 	// arrow state 0 = safe, 1= medium, 2=danger
-	int arrowstate = 0;
+	int arrowstate = 1;
 	Thread game;
 	// stores the current level
 	private int levelCount = 1;
@@ -189,27 +195,32 @@ public class minefield extends BasicGame {
 			}
 
 			// determine the danger level and move the arrow accordingly
-			if (determineDistanceToMine(x, y) <= 2 && arrowstate != 2) {
+			if (determineDistanceToMine(x, y) <= 2.5 && arrowstate != 2) {
 				arrow.setRotation(90);
 				arrow.draw();
-
 				arrowstate = 2;
-			} else if ((determineDistanceToMine(x, y) < 3)
-					&& (determineDistanceToMine(x, y) > 2) && arrowstate != 1) {
+				System.out.println("DANGER!!!");
+			} else if ((determineDistanceToMine(x, y) < 4.5)
+					&& (determineDistanceToMine(x, y) > 2.5) && arrowstate != 1) {
 				arrow.setRotation(0);
 				arrow.draw();
 
 				arrowstate = 1;
-			} else if (determineDistanceToMine(x, y) >= 3 && arrowstate != 0) {
+			} else if (determineDistanceToMine(x, y) >= 4.5 && arrowstate != 0) {
 				arrow.setRotation(270);
 				arrow.draw();
 				arrowstate = 0;
-			}
+			} 
 
 			// determine if the player is on a new level block
-			if (isNewLevel(x, y)) {
+			if (isNewLevel(x+1, y-1)) {
 				levelCount++;
 				grassMap = new TiledMap("data/map" + levelCount + ".tmx");
+				blocked = new boolean[grassMap.getWidth()][grassMap.getHeight()];
+				explosive = new boolean[grassMap.getWidth()][grassMap
+						.getHeight()];
+				nextLevel = new boolean[grassMap.getWidth()][grassMap
+						.getHeight()];
 				grassMap.render(0, 0);
 				x = 0;
 				y = 0;
@@ -217,9 +228,13 @@ public class minefield extends BasicGame {
 			}
 
 			// determine if the block is explosive
-			if (isExplosive(x, y)) {
+			if (isExplosive(x+1, y)) {
 				System.out.println("Explosion!");
 				gamestate = 1;
+				try{
+				playSound();
+				Thread.sleep(1700);
+				}catch (Exception e){}
 			}
 			// run distance to mine method and update indicator
 
@@ -269,11 +284,11 @@ public class minefield extends BasicGame {
 							+ Math.pow(j - blocky, 2));
 
 					// sets the closest distance to the proximity
-					if (tempDistance < Math.sqrt((closestMineX * closestMineX)
-							+ (closestMineY * closestMineY))) {
+					if (tempDistance < Math.sqrt(((closestMineX * closestMineX))
+							+ ((closestMineY * closestMineY)))) {
 						closestMineX = i;
 						closestMineY = j;
-						distance = tempDistance - 1;
+						distance = tempDistance-1.5;
 					}
 
 				}
@@ -303,7 +318,7 @@ public class minefield extends BasicGame {
 				}
 				if ("true".equals(explosion)) {
 					explosive[xAxis][yAxis] = true;
-					System.out.println("mine is at "+xAxis+","+yAxis);
+					System.out.println("mine is at " + xAxis + "," + yAxis);
 				}
 				if ("true".equals(level)) {
 					nextLevel[xAxis][yAxis] = true;
@@ -324,5 +339,17 @@ public class minefield extends BasicGame {
 		}
 		System.out.println("cleared");
 
+	}
+	//Method to play a wav sound
+	public void playSound(){
+	    try{
+	        AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File("data/explosionsound.wav").getAbsoluteFile());
+	        Clip clip = AudioSystem.getClip();
+	        clip.open(audioInputStream);
+	        clip.start();
+	    }catch(Exception ex){
+	        System.out.println("Error with playing sound.");
+	        ex.printStackTrace();
+	    }
 	}
 }
