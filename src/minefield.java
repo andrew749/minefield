@@ -22,6 +22,13 @@ public class minefield extends BasicGame {
 	private Animation sprite, up, down, left, right, explosion;
 	private static float x = 34f, y = 34f;
 	public static AppGameContainer app;
+	
+	
+	// initalizes my sound class which plays the explosion sound
+	static sound explosionsound;
+	
+	// intializes the background music
+	static sound song=new sound(1);
 	// stores dimensions for player
 	// state of 0 means playing, 1 means stopped
 	public int gamestate = 0;
@@ -77,6 +84,7 @@ public class minefield extends BasicGame {
 			app = new AppGameContainer(new minefield());
 			app.setDisplayMode(700, 700, false);
 			app.start();
+			song.playSound();
 		} catch (SlickException e) {
 			e.printStackTrace();
 		}
@@ -232,8 +240,10 @@ public class minefield extends BasicGame {
 				System.out.println("Explosion!");
 				gamestate = 1;
 				try{
-				playSound();
-				Thread.sleep(1700);
+					song.pause();
+					explosionsound=new sound(2);
+					explosionsound.playSound();
+					Thread.sleep(1700);
 				}catch (Exception e){}
 			}
 			// run distance to mine method and update indicator
@@ -339,17 +349,5 @@ public class minefield extends BasicGame {
 		}
 		System.out.println("cleared");
 
-	}
-	//Method to play a wav sound
-	public void playSound(){
-	    try{
-	        AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File("data/explosionsound.wav").getAbsoluteFile());
-	        Clip clip = AudioSystem.getClip();
-	        clip.open(audioInputStream);
-	        clip.start();
-	    }catch(Exception ex){
-	        System.out.println("Error with playing sound.");
-	        ex.printStackTrace();
-	    }
 	}
 }
