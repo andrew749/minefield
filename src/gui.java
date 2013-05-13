@@ -68,6 +68,7 @@ public class gui implements ActionListener {
 		if (h.equals("Play")) {
 			minefield.start();
 			System.out.println("done");
+			song.pause();
 		}
 		if (h.equals("Pause")) {
 			minefield.pause();
