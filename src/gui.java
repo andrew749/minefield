@@ -19,7 +19,7 @@ public class gui implements ActionListener {
 	JLabel label;
 	final String instructions = "Welcome to minefield. The purpose of this game is to avoid the mines\n and make it to the next level while using the proximity meter\n at the top to navigate.";
 	minefield minefield;
-
+	static sound song;
 	public gui() {
 		minefield = new minefield();
 		frame = new JFrame("Minefield");
@@ -49,28 +49,16 @@ public class gui implements ActionListener {
 		gui gui = new gui();
 	}
 
-	public static void playSound() {
-		try {
-			AudioInputStream audioInputStream = AudioSystem
-					.getAudioInputStream(new File("data/challa.wav")
-							.getAbsoluteFile());
-			Clip clip = AudioSystem.getClip();
-			clip.open(audioInputStream);
-			clip.start();
-		} catch (Exception ex) {
-			System.out.println("Error with playing sound.");
-			ex.printStackTrace();
-		}
-	}
 
 	public static void main(String[] args) {
+		song=new sound(1);
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
 
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
 				runGUI();
-				playSound();
+				song.playSound();
 			}
 		});
 	}
