@@ -2,14 +2,18 @@ import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 public class gui implements ActionListener {
-  JFrame frame;
+	JFrame frame;
 	JPanel contentPane;
 	JButton button, pause, stop;
 	JLabel label;
@@ -22,7 +26,7 @@ public class gui implements ActionListener {
 		label = new JLabel(instructions);
 		button = new JButton("Show");
 		pause = new JButton("Pause");
-		stop=new JButton("Stop");
+		stop = new JButton("Stop");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		contentPane = new JPanel();
 		button.addActionListener(this);
@@ -45,6 +49,20 @@ public class gui implements ActionListener {
 		gui gui = new gui();
 	}
 
+	public static void playSound() {
+		try {
+			AudioInputStream audioInputStream = AudioSystem
+					.getAudioInputStream(new File("data/challa.wav")
+							.getAbsoluteFile());
+			Clip clip = AudioSystem.getClip();
+			clip.open(audioInputStream);
+			clip.start();
+		} catch (Exception ex) {
+			System.out.println("Error with playing sound.");
+			ex.printStackTrace();
+		}
+	}
+
 	public static void main(String[] args) {
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
 
@@ -52,20 +70,22 @@ public class gui implements ActionListener {
 			public void run() {
 				// TODO Auto-generated method stub
 				runGUI();
+				playSound();
 			}
 		});
 	}
 
 	public void actionPerformed(ActionEvent event) {
-		String h=event.getActionCommand();
-		if (h.equals("Play")){
+		String h = event.getActionCommand();
+		if (h.equals("Play")) {
 			minefield.start();
 			System.out.println("done");
 		}
-		if (h.equals("Pause")){
+		if (h.equals("Pause")) {
 			minefield.pause();
-		}		
+		}
 		if (h.equals("Stop"))
 			minefield.stop();
 	}
+
 }
