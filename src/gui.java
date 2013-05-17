@@ -1,12 +1,6 @@
-import java.awt.Color;
-import java.awt.GridLayout;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -58,7 +52,7 @@ public class gui implements ActionListener {
 			public void run() {
 				// TODO Auto-generated method stub
 				runGUI();
-				song.playSound();
+				sound.playSound();
 			}
 		});
 	}
@@ -68,7 +62,7 @@ public class gui implements ActionListener {
 		if (h.equals("Play")) {
 			minefield.start();
 			System.out.println("done");
-			song.pause();
+			sound.pause();
 		}
 		if (h.equals("Pause")) {
 			minefield.pause();
