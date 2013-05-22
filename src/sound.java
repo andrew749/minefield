@@ -6,12 +6,14 @@ import javax.sound.sampled.Clip;
 
 public class sound {
 	static Clip clip;
+	static int cliptype;
 
 	/*
 	 * have an int variable that determines the type of sound that will be
 	 * played
 	 */
 	public sound(int type){
+		cliptype=type;
 		if (type == 1) {
 			try {
 				AudioInputStream audioInputStream = AudioSystem
@@ -36,7 +38,9 @@ public class sound {
 	public static void playSound() {
 		try {
 			clip.start();
+			if(cliptype==1){
 			clip.loop(clip.LOOP_CONTINUOUSLY);
+			}
 		} catch (Exception ex) {
 			System.out.println("Error with playing sound.");
 			ex.printStackTrace();
