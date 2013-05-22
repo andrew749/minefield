@@ -1,28 +1,46 @@
-
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.TextArea;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 
 public class gui implements ActionListener {
 	JFrame frame;
 	JPanel contentPane;
 	JButton button, pause, stop;
-	JLabel label;
-	final String instructions = "Welcome to minefield. The purpose of this game is to avoid the mines\n and make it to the next level while using the proximity meter\n at the top to navigate.";
+	JTextArea area;
+	final String instructions = "Welcome to Minefield. The purpose of this game is to avoid the mines and make it to the next level while using the proximity meter at the top to navigate. Keep on running as far as you can but rest assured that you will lose";
 	minefield minefield;
 	static sound song;
+
 	public gui() {
 		minefield = new minefield();
 		frame = new JFrame("Minefield");
-		label = new JLabel(instructions);
-		button = new JButton("Show");
+		button = new JButton("Play");
 		pause = new JButton("Pause");
 		stop = new JButton("Stop");
+		area = new JTextArea(20, 20);
+		area.setWrapStyleWord(true);
+		area.setFont(new Font("Serif", Font.ITALIC, 16));
+		area.setLineWrap(true);
+		area.setText(instructions);
+		area.setEditable(false);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		contentPane = new JPanel();
+		contentPane.setBorder(BorderFactory.createEmptyBorder(100, 100, 100,
+				100));
 		button.addActionListener(this);
 		pause.addActionListener(this);
 		stop.addActionListener(this);
@@ -30,9 +48,9 @@ public class gui implements ActionListener {
 		pause.setActionCommand("Pause");
 		stop.setActionCommand("Stop");
 		contentPane.add(button);
-		contentPane.add(label);
 		contentPane.add(pause);
 		contentPane.add(stop);
+		contentPane.add(area);
 		frame.setContentPane(contentPane);
 		frame.pack();
 		frame.setVisible(true);
@@ -43,16 +61,15 @@ public class gui implements ActionListener {
 		gui gui = new gui();
 	}
 
-
 	public static void main(String[] args) {
-		song=new sound(1);
+		song = new sound(1);
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
 
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
 				runGUI();
-				sound.playSound();
+				song.playSound();
 			}
 		});
 	}
@@ -62,7 +79,7 @@ public class gui implements ActionListener {
 		if (h.equals("Play")) {
 			minefield.start();
 			System.out.println("done");
-			sound.pause();
+			song.pause();
 		}
 		if (h.equals("Pause")) {
 			minefield.pause();
