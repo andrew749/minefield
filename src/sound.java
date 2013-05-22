@@ -5,7 +5,7 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 
 public class sound {
-  static Clip clip;
+	static Clip clip;
 
 	/*
 	 * have an int variable that determines the type of sound that will be
@@ -36,12 +36,12 @@ public class sound {
 	public static void playSound() {
 		try {
 			clip.start();
+			clip.loop(clip.LOOP_CONTINUOUSLY);
 		} catch (Exception ex) {
 			System.out.println("Error with playing sound.");
 			ex.printStackTrace();
 		}
 	}
-
 	public static void pause() {
 		clip.stop();
 	}
