@@ -1,18 +1,10 @@
-import java.awt.Color;
 import java.awt.Font;
-import java.awt.GridLayout;
-import java.awt.TextArea;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
@@ -21,7 +13,7 @@ public class gui implements ActionListener {
 	JPanel contentPane;
 	JButton button, pause, stop;
 	JTextArea area;
-	final String instructions = "Welcome to Minefield. The purpose of this game is to avoid the mines and make it to the next level while using the proximity meter at the top to navigate. Keep on running as far as you can but rest assured that you will lose";
+	final String instructions = "Welcome to Minefield. The purpose of this game is to avoid the mines and make it to the next level while using the proximity meter at the top to navigate(it will display the danger level accordingly with red the most dangerous and green as safe). Keep on running as far as you can but rest assured that you will lose. Step on the grey tiles in order to get to the next level. Click on the arrow keys to move the player accordingly. You cannot move past the rock blocks.";
 	minefield minefield;
 	static sound song;
 
