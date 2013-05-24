@@ -13,7 +13,7 @@ public class gui implements ActionListener {
 	JPanel contentPane;
 	JButton button, pause, stop;
 	JTextArea area;
-	final String instructions = "Welcome to Minefield. The purpose of this game is to avoid the mines and make it to the next level while using the proximity meter at the top to navigate(it will display the danger level accordingly with red the most dangerous and green as safe). Keep on running as far as you can but rest assured that you will lose. Step on the grey tiles in order to get to the next level. Click on the arrow keys to move the player accordingly. You cannot move past the rock blocks.";
+	final String instructions = "Welcome to Minefield. The purpose of this game is to avoid the mines and make it to the next level while using the proximity meter at the top to navigate(it will display the danger level accordingly with red the most dangerous and green as safe). To start, click the play button at the side of this menu.  Step on the grey tiles in order to get to the next level and try to avoid the mines(NOTE that the mines are currently unhidden for debugging purposes). The grass areas are safe to walk on. Click on the arrow keys to move the player accordingly(up, left, right, down). You cannot move past the rock blocks and doing so will only stop your player walking. Keep on running as far as you can and try to complete all 10 levels.";
 	minefield minefield;
 	static sound song;
 
