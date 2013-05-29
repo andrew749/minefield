@@ -16,6 +16,7 @@ public class sound {
 		cliptype=type;
 		if (type == 1) {
 			try {
+				//create audio input stream to decode song
 				AudioInputStream audioInputStream = AudioSystem
 						.getAudioInputStream(new File("data/challa.wav")
 								.getAbsoluteFile());
@@ -34,7 +35,7 @@ public class sound {
 			}
 		}
 	}
-
+//play the songs
 	public static void playSound() {
 		try {
 			clip.start();
