@@ -18,6 +18,7 @@ public class gui implements ActionListener {
 	static sound song;
 
 	public gui() {
+		//initalize all the gui elements and add them to the frame
 		minefield = new minefield();
 		frame = new JFrame("Minefield");
 		button = new JButton("Play");
@@ -55,6 +56,7 @@ public class gui implements ActionListener {
 
 	public static void main(String[] args) {
 		song = new sound(1);
+		//thread to run game
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
 
 			@Override
@@ -68,11 +70,13 @@ public class gui implements ActionListener {
 
 	public void actionPerformed(ActionEvent event) {
 		String h = event.getActionCommand();
+		//start game
 		if (h.equals("Play")) {
 			minefield.start();
 			System.out.println("done");
 			song.pause();
 		}
+		//doesnt work
 		if (h.equals("Pause")) {
 			minefield.pause();
 		}
